@@ -4,11 +4,10 @@ local config = require("ros-nvim.config")
 
 local ros = {}
 
-ros.Package = {}
-ros.Package.__index = ros.Package
-
 ros._package_list = nil
 
+ros.Package = {}
+ros.Package.__index = ros.Package
 function ros.Package.new(name, path, files)
   local self = setmetatable({}, ros.Package)
   self.name = name
@@ -55,6 +54,88 @@ local function get_package_path(pkg_name)
   return pkg_path
 end
 
+local function get_msg_definition(msg_name)
+  local definition = io.popen("rosmsg show " .. msg_name .. " 2> /dev/null"):read('*all')
+  if string.len(definition) == 0 then
+    return nil
+  else
+    return definition
+  end
+end
+
+local function get_srv_definition(msg_name)
+  local definition = io.popen("rossrv show " .. msg_name .. " 2> /dev/null"):read('*all')
+  if string.len(definition) == 0 then
+    return nil
+  else
+    return definition
+  end
+end
+
+
+local function create_floating_window(content)
+  local w, h = 50, #content
+
+  local buf = vim.api.nvim_create_buf(false, true)
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local y, x = cursor[1], cursor[2]
+  local ui = vim.api.nvim_list_uis()[1]
+
+  local opts = {
+    relative = "cursor",
+    width = w,
+    height = h,
+    col = 0,
+    row = 1,
+    anchor = "NW",
+    style = "minimal",
+    focusable = false,
+  }
+  local win = vim.api.nvim_open_win(buf, false, opts)
+
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, content)
+  local autocmd = vim.api.nvim_create_autocmd({"CursorMoved"}, {
+    callback = function()
+      vim.api.nvim_win_close(win, true)
+    end,
+    buffer = 0,
+    once = true,
+  })
+end
+
+function ros.show_message_definition()
+  -- Get the current visual selection
+  local cursor_word = vim.fn.expand("<cWORD>")
+  -- Test String: PointCloud2
+
+  local definition = get_msg_definition(cursor_word)
+
+  if definition == nil then
+    vim.notify("No valid message: " .. cursor_word)
+    return
+  end
+
+  definition = util.strsplit(definition, "\n")
+  create_floating_window(definition)
+end
+
+function ros.show_service_definition()
+  -- Get the current visual selection
+  local cursor_word = vim.fn.expand("<cWORD>")
+  -- Test String: Trigger
+
+  local definition = get_srv_definition(cursor_word)
+
+  if definition == nil then
+    vim.notify("No valid service: " .. cursor_word)
+    return
+  end
+
+  definition = util.strsplit(definition, "\n")
+  create_floating_window(definition)
+end
+
+
 function ros.open_launch_include()
   -- Get the current visual selection
   vim.cmd('normal "vya"')
@@ -66,7 +147,6 @@ function ros.open_launch_include()
   local package, file = string.match(visual_selection, regex)
 
   if package and file then
-    -- Open the file "foo"
     local output = get_package_path(package)
     local path = output..file
     vim.cmd('edit ' .. path)
