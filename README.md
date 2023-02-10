@@ -10,7 +10,7 @@ Ros plugin for neovim
 require("lazy").setup({
 ...
     {
-        'tadachs/ros.nvim',
+        'tadachs/ros-nvim',
         config = function() require("ros-nvim").setup({only_workspace = true}) end,
         dependencies = { "tadachs/mutils.nvim" },
     },
