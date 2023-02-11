@@ -203,7 +203,7 @@
     },
     "const_value": {
       "type": "PATTERN",
-      "value": ".*"
+      "value": "[a-zA-Z0-9\\.]+"
     },
     "identifier": {
       "type": "PATTERN",
