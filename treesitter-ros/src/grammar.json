@@ -12,6 +12,10 @@
           },
           {
             "type": "SYMBOL",
+            "name": "separator"
+          },
+          {
+            "type": "SYMBOL",
             "name": "field_definition"
           }
         ]
@@ -37,6 +41,10 @@
     "comment_string": {
       "type": "PATTERN",
       "value": ".*"
+    },
+    "separator": {
+      "type": "STRING",
+      "value": "---"
     },
     "field_definition": {
       "type": "SEQ",

@@ -162,6 +162,10 @@
         {
           "type": "field_definition",
           "named": true
+        },
+        {
+          "type": "separator",
+          "named": true
         }
       ]
     }
@@ -221,6 +225,10 @@
   {
     "type": "int8",
     "named": false
+  },
+  {
+    "type": "separator",
+    "named": true
   },
   {
     "type": "string",
