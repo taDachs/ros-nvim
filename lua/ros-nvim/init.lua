@@ -60,6 +60,12 @@ vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
 })
 
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = {"*.srv"},
+  command = "setf ros",
+  group = ros_autocmd_grp,
+})
+
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
   pattern = {"*.action"},
   command = "setf ros",
   group = ros_autocmd_grp,
