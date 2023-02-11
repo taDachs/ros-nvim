@@ -1,5 +1,5 @@
 module.exports = grammar({
-  name: 'rosmsg',
+  name: 'ros',
 
   rules: {
     source_file: $ => repeat(

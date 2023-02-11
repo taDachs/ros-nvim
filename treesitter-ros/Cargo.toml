@@ -2,7 +2,7 @@
 name = "tree-sitter-ros"
 description = "ros grammar for the tree-sitter parsing library"
 version = "0.0.1"
-keywords = ["incremental", "parsing", "rosmsg"]
+keywords = ["incremental", "parsing", "ros"]
 categories = ["parsing", "text-editors"]
 edition = "2018"
 
