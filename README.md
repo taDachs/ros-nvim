@@ -18,12 +18,18 @@ require("lazy").setup({
 })
 ```
 
+You have to install [treesitter](https://github.com/nvim-treesitter/nvim-treesitter) and
+[telescope](https://github.com/nvim-telescope/telescope.nvim) separately. To install the
+grammar for syntax highlighting run `TSInstall ros`.
+
+
 ## Features
 
 - `Rosed` command with tab completion
 - follow `$(find ...)` links in launch files
-- telescope finder
 - show message and service definitions in floating windows
+- (optional) telescope finder
+- (optional) syntax highlighting for messages, services and actions using treesitter
 
 ## Example Setup
 
@@ -38,3 +44,7 @@ vim.keymap.set('n', '<leader>rol', function() require("ros-nvim.ros").open_launc
 vim.keymap.set('n', '<leader>rdm', function() require("ros-nvim.ros").show_message_definition() end, { silent = true, noremap = true })
 vim.keymap.set('n', '<leader>rds', function() require("ros-nvim.ros").show_service_definition() end, { silent = true, noremap = true })
 ```
+
+## Contributors
+
+- [darius1702](https://github.com/darius1702)

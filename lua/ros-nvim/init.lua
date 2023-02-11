@@ -12,7 +12,7 @@ function get_parser_path()
 end
 
 if treesitter ~= nil then
-local parser_config = treesitter.get_parser_configs()
+  local parser_config = treesitter.get_parser_configs()
   parser_config.ros = {
     install_info = {
       url = get_parser_path() .. "/treesitter-ros/", -- local path or git repo
@@ -44,5 +44,25 @@ vim.api.nvim_create_user_command("Rosed", function(opts)
                                           }
                                 )
 
+
+local ros_autocmd_grp = vim.api.nvim_create_augroup("ros-nvim", { clear = true })
+
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = {"*.launch"},
+  command = "setf xml",
+  group = ros_autocmd_grp,
+})
+
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = {"*.msg"},
+  command = "setf ros",
+  group = ros_autocmd_grp,
+})
+
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = {"*.action"},
+  command = "setf ros",
+  group = ros_autocmd_grp,
+})
 
 return M
