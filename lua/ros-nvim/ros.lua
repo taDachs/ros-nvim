@@ -54,7 +54,10 @@ local function get_package_path(pkg_name)
   return pkg_path
 end
 
-local function get_msg_definition(msg_name)
+local function get_msg_definition(msg_name, pkg)
+  if pkg ~= nil then
+    msg_name = pkg .. "/" .. msg_name
+  end
   local definition = io.popen("rosmsg show " .. msg_name .. " 2> /dev/null"):read('*all')
   if string.len(definition) == 0 then
     return nil
@@ -63,8 +66,11 @@ local function get_msg_definition(msg_name)
   end
 end
 
-local function get_srv_definition(msg_name)
-  local definition = io.popen("rossrv show " .. msg_name .. " 2> /dev/null"):read('*all')
+local function get_srv_definition(srv_name, pkg)
+  if pkg ~= nil then
+    srv_name = pkg .. "/" .. srv_name
+  end
+  local definition = io.popen("rossrv show " .. srv_name .. " 2> /dev/null"):read('*all')
   if string.len(definition) == 0 then
     return nil
   else
@@ -107,8 +113,19 @@ function ros.show_message_definition()
   -- Get the current visual selection
   local cursor_word = vim.fn.expand("<cWORD>")
   -- Test String: PointCloud2
+  -- Test String: sensor_msgs::PointCloud2
 
-  local definition = get_msg_definition(cursor_word)
+  local pkg, msg
+  local val = util.strsplit(cursor_word, "::")
+  if #val >= 2 then
+    pkg = val[1]
+    msg = val[2]
+  else
+    pkg = nil
+    msg = val[1]
+  end
+
+  local definition = get_msg_definition(msg, pkg)
 
   if definition == nil then
     vim.notify("No valid message: " .. cursor_word)
@@ -122,9 +139,19 @@ end
 function ros.show_service_definition()
   -- Get the current visual selection
   local cursor_word = vim.fn.expand("<cWORD>")
-  -- Test String: Trigger
+  -- Test String: std_srvs::Trigger
 
-  local definition = get_srv_definition(cursor_word)
+  local pkg, srv
+  local val = util.strsplit(cursor_word, "::")
+  if #val >= 2 then
+    pkg = val[1]
+    srv = val[2]
+  else
+    pkg = nil
+    srv = val[1]
+  end
+
+  local definition = get_srv_definition(srv, pkg)
 
   if definition == nil then
     vim.notify("No valid service: " .. cursor_word)
