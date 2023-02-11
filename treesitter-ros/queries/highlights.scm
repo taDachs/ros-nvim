@@ -4,3 +4,4 @@
 (field_name) @variable
 (const_name) @constant
 "=" @operator
+(separator) @punctuation

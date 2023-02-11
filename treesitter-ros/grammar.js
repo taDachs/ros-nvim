@@ -5,6 +5,7 @@ module.exports = grammar({
     source_file: $ => repeat(
       choice(
         $.comment,
+        $.separator,
         $.field_definition,
       )
     ),
@@ -12,6 +13,8 @@ module.exports = grammar({
     comment: $ => seq($.comment_char, $.comment_string),
     comment_char: $ => '#',
     comment_string: $ => /.*/,
+
+    separator: $ => "---",
 
     field_definition: $ => seq($.field_type, $.field_name),
     field_type: $ => choice($.builtin_type, $.custom_type, $.array_type),
