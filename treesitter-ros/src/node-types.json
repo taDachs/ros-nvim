@@ -43,11 +43,6 @@
     }
   },
   {
-    "type": "comment_string",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "const_definition",
     "named": true,
     "fields": {},
@@ -65,11 +60,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "const_value",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "custom_type",
@@ -191,7 +181,15 @@
     "named": true
   },
   {
+    "type": "comment_string",
+    "named": true
+  },
+  {
     "type": "const_name",
+    "named": true
+  },
+  {
+    "type": "const_value",
     "named": true
   },
   {
