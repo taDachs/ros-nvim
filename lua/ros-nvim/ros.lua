@@ -5,11 +5,12 @@ local config = require("ros-nvim.config")
 local ros = {}
 
 ros._package_list = nil
-ros._service_list = nil
-ros._msg_lsit = nil
+ros._srv_list = {}
+ros._msg_list = {}
 
 ros.Package = {}
 ros.Package.__index = ros.Package
+
 function ros.Package.new(name, path, files)
   local self = setmetatable({}, ros.Package)
   self.name = name
@@ -17,6 +18,30 @@ function ros.Package.new(name, path, files)
   self.files = files
   return self
 end
+
+ros.Message = {}
+ros.Message.__index = ros.Message
+
+function ros.Message.new(name, definition, package)
+  local self = setmetatable({}, ros.Message)
+  self.name = name
+  self.definition = definition
+  self.package = package
+  return self
+end
+
+
+ros.Service = {}
+ros.Service.__index = ros.Service
+
+function ros.Service.new(name, definition, package)
+  local self = setmetatable({}, ros.Service)
+  self.name = name
+  self.definition = definition
+  self.package = package
+  return self
+end
+
 
 function ros.is_ros_sourced()
   return os.getenv("ROS_VERSION") ~= nil
@@ -57,6 +82,9 @@ function ros.get_package_path(pkg_name)
 end
 
 function ros.get_msg_definition(msg_name, pkg)
+  if ros._msg_list[msg_name] ~= nil then
+    return ros._msg_list[msg_name].definition
+  end
   if pkg ~= nil then
     msg_name = pkg .. "/" .. msg_name
   end
@@ -64,6 +92,7 @@ function ros.get_msg_definition(msg_name, pkg)
   if string.len(definition) == 0 then
     return nil
   else
+    ros._msg_list[msg_name] = ros.Message.new(msg_name, definition, pkg)
     return definition
   end
 end
@@ -72,10 +101,14 @@ function ros.get_srv_definition(srv_name, pkg)
   if pkg ~= nil then
     srv_name = pkg .. "/" .. srv_name
   end
+  if ros._srv_list[srv_name] ~= nil then
+    return ros._srv_list[srv_name].definition
+  end
   local definition = io.popen("rossrv show " .. srv_name .. " 2> /dev/null"):read('*all')
   if string.len(definition) == 0 then
     return nil
   else
+    ros._srv_list[srv_name] = ros.Service.new(srv_name, definition, pkg)
     return definition
   end
 end
@@ -141,6 +174,7 @@ end
 function ros.show_service_definition()
   -- Get the current visual selection
   local cursor_word = vim.fn.expand("<cWORD>")
+  -- Test String: Trigger
   -- Test String: std_srvs::Trigger
 
   local pkg, srv
