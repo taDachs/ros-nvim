@@ -31,8 +31,10 @@ grammar for syntax highlighting run `TSInstall ros`.
 - `Rosed` command with tab completion
 - follow `$(find ...)` links in launch files
 - show message and service definitions in floating windows
+- autocmcds for setting `ros` filetype for definition files (messages, services, actions),
+  sets commentstring as well
 - (optional) telescope finder
-- (optional) syntax highlighting for messages, services and actions using treesitter
+- (optional) syntax highlighting for definition using treesitter
 
 ## Example Setup
 
