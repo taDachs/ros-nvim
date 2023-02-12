@@ -30,7 +30,6 @@ function ros.Message.new(name, definition, package)
   return self
 end
 
-
 ros.Service = {}
 ros.Service.__index = ros.Service
 
@@ -42,7 +41,6 @@ function ros.Service.new(name, definition, package)
   return self
 end
 
-
 function ros.is_ros_sourced()
   return os.getenv("ROS_VERSION") ~= nil
 end
@@ -51,7 +49,8 @@ function ros.get_ros_package_path()
   if ros._ros_package_path ~= nil then
     return ros._ros_package_path
   end
-  local pkg_paths = io.popen("bash -c 'source " .. ros.get_ws_dir() .. "/devel/setup.bash; echo $ROS_PACKAGE_PATH'"):read('*all')
+  local pkg_paths = io.popen("bash -c 'source " .. ros.get_ws_dir() .. "/devel/setup.bash; echo $ROS_PACKAGE_PATH'")
+    :read("*all")
   pkg_paths = string.gsub(pkg_paths, "\n$", "")
   ros._ros_package_path = pkg_paths
   return pkg_paths
@@ -76,7 +75,9 @@ function ros.get_ws_dir()
 end
 
 function ros.get_package_list()
-  if ros._package_list ~= nil then return ros._package_list end
+  if ros._package_list ~= nil then
+    return ros._package_list
+  end
 
   if ros.is_ros_sourced() then
     ros.source_ws()
@@ -92,7 +93,6 @@ local function prefix_command_with_pkg_path(command)
 end
 
 function ros.source_ws()
-
   ros._package_list = {}
   ros._msg_list = {}
   ros._srv_list = {}
@@ -100,22 +100,19 @@ function ros.source_ws()
   ros._ws_dir = nil
   ros._telescope_result_list = nil
 
-  local pkg_paths = io.popen(prefix_command_with_pkg_path("rospack list")):read('*all')
+  local pkg_paths = io.popen(prefix_command_with_pkg_path("rospack list")):read("*all")
   for _, path in pairs(util.strsplit(pkg_paths, "\n")) do
     path = util.strsplit(path)
     local name, pkg_path = path[1], path[2]
-    if config.only_workspace and not util.is_subdir(pkg_path, ros.get_ws_dir()) then
-      goto continue
+    if not config.only_workspace or util.is_subdir(pkg_path, ros.get_ws_dir()) then
+      local files = util.find_files_in_dir(pkg_path, "f")
+      ros._package_list[name] = ros.Package.new(name, pkg_path, files)
     end
-    local files = util.find_files_in_dir(pkg_path, "f")
-    ros._package_list[name] = ros.Package.new(name, pkg_path, files)
-
-    ::continue::
   end
 end
 
 function ros.get_package_path(pkg_name)
-  local pkg_path = io.popen(prefix_command_with_pkg_path("rospack find " .. pkg_name)):read('*all')
+  local pkg_path = io.popen(prefix_command_with_pkg_path("rospack find " .. pkg_name)):read("*all")
   pkg_path = string.gsub(pkg_path, "\n$", "")
   return pkg_path
 end
@@ -127,7 +124,7 @@ function ros.get_msg_definition(msg_name, pkg)
   if pkg ~= nil then
     msg_name = pkg .. "/" .. msg_name
   end
-  local definition = io.popen(prefix_command_with_pkg_path("rosmsg show " .. msg_name .. " 2> /dev/null")):read('*all')
+  local definition = io.popen(prefix_command_with_pkg_path("rosmsg show " .. msg_name .. " 2> /dev/null")):read("*all")
   if string.len(definition) == 0 then
     return nil
   else
@@ -143,7 +140,7 @@ function ros.get_srv_definition(srv_name, pkg)
   if ros._srv_list[srv_name] ~= nil then
     return ros._srv_list[srv_name].definition
   end
-  local definition = io.popen(prefix_command_with_pkg_path("rossrv show " .. srv_name .. " 2> /dev/null")):read('*all')
+  local definition = io.popen(prefix_command_with_pkg_path("rossrv show " .. srv_name .. " 2> /dev/null")):read("*all")
   if string.len(definition) == 0 then
     return nil
   else
@@ -151,7 +148,6 @@ function ros.get_srv_definition(srv_name, pkg)
     return definition
   end
 end
-
 
 local function create_floating_window(content)
   local w, h = 50, #content
@@ -174,7 +170,7 @@ local function create_floating_window(content)
   local win = vim.api.nvim_open_win(buf, false, opts)
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, content)
-  local autocmd = vim.api.nvim_create_autocmd({"CursorMoved"}, {
+  local autocmd = vim.api.nvim_create_autocmd({ "CursorMoved" }, {
     callback = function()
       vim.api.nvim_win_close(win, true)
     end,
@@ -237,11 +233,10 @@ function ros.show_service_definition()
   create_floating_window(definition)
 end
 
-
 function ros.open_launch_include()
   -- Get the current visual selection
   vim.cmd('normal "vya"')
-  local visual_selection = vim.fn.getreg('v')
+  local visual_selection = vim.fn.getreg("v")
 
   local regex = "$%(find ([%a%d_]+)%)(/[%a%d_%.%~/-]+)"
 
@@ -250,15 +245,15 @@ function ros.open_launch_include()
 
   if package and file then
     local output = ros.get_package_path(package)
-    local path = output..file
-    vim.cmd('edit ' .. path)
+    local path = output .. file
+    vim.cmd("edit " .. path)
   end
 end
 
 function ros.rosed(pkg_name, file_name, edit_command)
   local pkg = ros.get_package_list()[pkg_name]
   if pkg == nil then
-    vim.notify("\"" .. pkg_name .. "\" does not exist")
+    vim.notify('"' .. pkg_name .. '" does not exist')
     return
   end
 
@@ -269,14 +264,14 @@ function ros.rosed(pkg_name, file_name, edit_command)
   end
 
   for _, f in pairs(pkg_files) do
-    if util.get_basename(f) == file_name then  -- found file
+    if util.get_basename(f) == file_name then -- found file
       vim.cmd(edit_command .. " " .. f)
       return
     end
   end
 
   -- file does not exist
-  vim.notify("\"" .. file_name .. "\" does not exist in package \"" .. pkg_name .. "\"")
+  vim.notify('"' .. file_name .. '" does not exist in package "' .. pkg_name .. '"')
 end
 
 function ros.package_file_completion(arg_lead, cmd_line, cursor_pos)

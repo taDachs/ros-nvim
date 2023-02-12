@@ -1,0 +1,4 @@
+indent_type = "Spaces"
+quote_style = "AutoPreferDouble"
+call_parentheses = "Always"
+indent_width = 2

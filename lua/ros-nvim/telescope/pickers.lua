@@ -1,5 +1,5 @@
-local pickers = require "telescope.pickers"
-local finders = require "telescope.finders"
+local pickers = require("telescope.pickers")
+local finders = require("telescope.finders")
 local conf = require("telescope.config").values
 
 local ros = require("ros-nvim.ros")
@@ -37,15 +37,19 @@ function ros_pickers.ros_files(opts)
 
   local finder = finders.new_table({
     results = build_result_list(),
-    entry_maker = function(e) return e end,
+    entry_maker = function(e)
+      return e
+    end,
   })
 
-  pickers.new(opts, {
-    prompt_title = "ros",
-    finder = finder,
-    sorter = conf.generic_sorter(opts),
-    previewer = conf.file_previewer(opts)
-  }):find()
+  pickers
+    .new(opts, {
+      prompt_title = "ros",
+      finder = finder,
+      sorter = conf.generic_sorter(opts),
+      previewer = conf.file_previewer(opts),
+    })
+    :find()
 end
 
 return ros_pickers
