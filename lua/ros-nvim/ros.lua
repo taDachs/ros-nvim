@@ -5,6 +5,8 @@ local config = require("ros-nvim.config")
 local ros = {}
 
 ros._package_list = nil
+ros._service_list = nil
+ros._msg_lsit = nil
 
 ros.Package = {}
 ros.Package.__index = ros.Package
@@ -48,13 +50,13 @@ function ros.init_package_list(only_workspace)
   end
 end
 
-local function get_package_path(pkg_name)
+function ros.get_package_path(pkg_name)
   local pkg_path = io.popen("rospack find " .. pkg_name):read('*all')
   pkg_path = string.gsub(pkg_path, "\n$", "")
   return pkg_path
 end
 
-local function get_msg_definition(msg_name, pkg)
+function ros.get_msg_definition(msg_name, pkg)
   if pkg ~= nil then
     msg_name = pkg .. "/" .. msg_name
   end
@@ -66,7 +68,7 @@ local function get_msg_definition(msg_name, pkg)
   end
 end
 
-local function get_srv_definition(srv_name, pkg)
+function ros.get_srv_definition(srv_name, pkg)
   if pkg ~= nil then
     srv_name = pkg .. "/" .. srv_name
   end
@@ -125,7 +127,7 @@ function ros.show_message_definition()
     msg = val[1]
   end
 
-  local definition = get_msg_definition(msg, pkg)
+  local definition = ros.get_msg_definition(msg, pkg)
 
   if definition == nil then
     vim.notify("No valid message: " .. cursor_word)
@@ -151,7 +153,7 @@ function ros.show_service_definition()
     srv = val[1]
   end
 
-  local definition = get_srv_definition(srv, pkg)
+  local definition = ros.get_srv_definition(srv, pkg)
 
   if definition == nil then
     vim.notify("No valid service: " .. cursor_word)
@@ -174,7 +176,7 @@ function ros.open_launch_include()
   local package, file = string.match(visual_selection, regex)
 
   if package and file then
-    local output = get_package_path(package)
+    local output = ros.get_package_path(package)
     local path = output..file
     vim.cmd('edit ' .. path)
   end
