@@ -36,6 +36,26 @@ grammar for syntax highlighting run `TSInstall ros`.
 
 ## Example Setup
 
+### Default Config
+
+```lua
+{
+  only_workspace = true,
+  lazy_load_package_list = true,
+  treesitter = {
+    enabled = true,
+  },
+  commands = {
+    enabled = true,
+  },
+  autocmds = {
+    enabled = true,
+  },
+}
+```
+
+### Keymaps
+
 ```lua
 -- telescope finder
 vim.keymap.set('n', '<leader>tr', '<cmd>Telescope ros ros<cr>', { noremap = true })

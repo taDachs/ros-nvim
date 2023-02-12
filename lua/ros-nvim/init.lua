@@ -76,9 +76,17 @@ M = {}
 function M.setup(opts)
   config.update(opts)
 
-  setup_commands()
-  setup_autocommands()
-  setup_treesitter()
+  if config.commands.enabled then
+    setup_commands()
+  end
+
+  if config.autocmds.enabled then
+    setup_autocommands()
+  end
+
+  if config.treesitter.enabled then
+    setup_treesitter()
+  end
 
   if not config.lazy_load_package_list then
     ros.init_package_list(config)
