@@ -69,6 +69,12 @@ local function setup_commands()
                                               complete = ros.package_file_completion,
                                             }
                                   )
+  vim.api.nvim_create_user_command("RosSource", ros.source_ws,
+
+                                            {
+                                              nargs = 0,
+                                            }
+                                  )
 end
 
 M = {}
@@ -89,7 +95,7 @@ function M.setup(opts)
   end
 
   if not config.lazy_load_package_list then
-    ros.init_package_list(config)
+    ros.source_ws()
   end
 end
 

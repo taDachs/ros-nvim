@@ -47,11 +47,39 @@ function ros.is_ros_sourced()
   return os.getenv("ROS_VERSION") ~= nil
 end
 
+function ros.get_ros_package_path()
+  if ros._ros_package_path ~= nil then
+    return ros._ros_package_path
+  end
+  local pkg_paths = io.popen("bash -c 'source " .. ros.get_ws_dir() .. "/devel/setup.bash; echo $ROS_PACKAGE_PATH'"):read('*all')
+  pkg_paths = string.gsub(pkg_paths, "\n$", "")
+  ros._ros_package_path = pkg_paths
+  return pkg_paths
+end
+
+function ros.get_ws_dir()
+  if ros._ws_dir ~= nil then
+    return ros._ws_dir
+  end
+  if not ros.is_ros_sourced() then
+    return nil
+  end
+  local cmake_prefix_path = os.getenv("CMAKE_PREFIX_PATH")
+  if cmake_prefix_path == nil then
+    return nil
+  end
+
+  -- first element in cmake_prefix_path should be last sourced ws
+  local ws_dir = util.get_dirname(util.strsplit(cmake_prefix_path, ":")[1])
+  ros._ws_dir = ws_dir
+  return ws_dir
+end
+
 function ros.get_package_list()
   if ros._package_list ~= nil then return ros._package_list end
 
   if ros.is_ros_sourced() then
-    ros.init_package_list(config.only_workspace)
+    ros.source_ws()
   else
     ros._package_list = {}
   end
@@ -59,13 +87,24 @@ function ros.get_package_list()
   return ros._package_list
 end
 
-function ros.init_package_list(only_workspace)
+local function prefix_command_with_pkg_path(command)
+  return "ROS_PACKAGE_PATH=" .. ros.get_ros_package_path() .. " " .. command
+end
+
+function ros.source_ws()
+
   ros._package_list = {}
-  local pkg_paths = io.popen("rospack list"):read('*all')
+  ros._msg_list = {}
+  ros._srv_list = {}
+  ros._ros_package_path = nil
+  ros._ws_dir = nil
+  ros._telescope_result_list = nil
+
+  local pkg_paths = io.popen(prefix_command_with_pkg_path("rospack list")):read('*all')
   for _, path in pairs(util.strsplit(pkg_paths, "\n")) do
     path = util.strsplit(path)
     local name, pkg_path = path[1], path[2]
-    if only_workspace and string.match(pkg_path, "^/opt/.*") then
+    if config.only_workspace and not util.is_subdir(pkg_path, ros.get_ws_dir()) then
       goto continue
     end
     local files = util.find_files_in_dir(pkg_path, "f")
@@ -76,7 +115,7 @@ function ros.init_package_list(only_workspace)
 end
 
 function ros.get_package_path(pkg_name)
-  local pkg_path = io.popen("rospack find " .. pkg_name):read('*all')
+  local pkg_path = io.popen(prefix_command_with_pkg_path("rospack find " .. pkg_name)):read('*all')
   pkg_path = string.gsub(pkg_path, "\n$", "")
   return pkg_path
 end
@@ -88,7 +127,7 @@ function ros.get_msg_definition(msg_name, pkg)
   if pkg ~= nil then
     msg_name = pkg .. "/" .. msg_name
   end
-  local definition = io.popen("rosmsg show " .. msg_name .. " 2> /dev/null"):read('*all')
+  local definition = io.popen(prefix_command_with_pkg_path("rosmsg show " .. msg_name .. " 2> /dev/null")):read('*all')
   if string.len(definition) == 0 then
     return nil
   else
@@ -104,7 +143,7 @@ function ros.get_srv_definition(srv_name, pkg)
   if ros._srv_list[srv_name] ~= nil then
     return ros._srv_list[srv_name].definition
   end
-  local definition = io.popen("rossrv show " .. srv_name .. " 2> /dev/null"):read('*all')
+  local definition = io.popen(prefix_command_with_pkg_path("rossrv show " .. srv_name .. " 2> /dev/null")):read('*all')
   if string.len(definition) == 0 then
     return nil
   else

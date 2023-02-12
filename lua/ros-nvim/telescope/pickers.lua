@@ -7,11 +7,11 @@ local util = require("mutils")
 
 local ros_pickers = {}
 
-local result_list = nil
+ros._telescope_result_list = nil
 
-local function build_result_list()
-  if result_list ~= nil then
-    return result_list
+function build_result_list()
+  if ros._telescope_result_list ~= nil then
+    return ros._telescope_result_list
   end
   local results = {}
   for _, pkg in pairs(ros.get_package_list()) do
@@ -24,7 +24,7 @@ local function build_result_list()
       })
     end
   end
-  result_list = results
+  ros._telescope_result_list = results
   return results
 end
 
