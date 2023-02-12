@@ -3,12 +3,15 @@ local ros = require("ros-nvim.ros")
 
 local treesitter = require("nvim-treesitter.parsers")
 
-function get_parser_path()
+local function get_parser_path()
   for _, p in pairs(vim.api.nvim_list_runtime_paths()) do
     if string.match(p, "ros%-nvim") then
       return p
     end
   end
+end
+
+local function setup_treesitter()
 end
 
 if treesitter ~= nil then
@@ -25,50 +28,61 @@ if treesitter ~= nil then
   }
 end
 
+local function setup_autocommands()
+  local ros_autocmd_grp = vim.api.nvim_create_augroup("ros-nvim", { clear = true })
+
+  vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+    pattern = {"*.launch"},
+    command = "setf xml",
+    group = ros_autocmd_grp,
+  })
+
+  vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+    pattern = {"*.msg"},
+    command = "setf ros",
+    group = ros_autocmd_grp,
+  })
+
+  vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+    pattern = {"*.srv"},
+    command = "setf ros",
+    group = ros_autocmd_grp,
+  })
+
+  vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+    pattern = {"*.action"},
+    command = "setf ros",
+    group = ros_autocmd_grp,
+  })
+end
+
+local function setup_commands()
+  vim.api.nvim_create_user_command("Rosed", function(opts)
+                                              if #opts.fargs ~= 2 then
+                                                vim.notify("Error, Rosed need exactly two arguments")
+                                                return
+                                              end
+                                              ros.rosed(opts.fargs[1], opts.fargs[2])
+                                            end,
+                                            {
+                                              nargs = "+",
+                                              complete = ros.package_file_completion,
+                                            }
+                                  )
+end
+
 M = {}
 
 function M.setup(opts)
-  M.config = config.update(opts)
+  config.update(opts)
+
+  setup_commands()
+  setup_autocommands()
+  setup_treesitter()
+
+  if not config.lazy_load_package_list then
+    ros.init_package_list(config)
+  end
 end
-
-vim.api.nvim_create_user_command("Rosed", function(opts)
-                                            if #opts.fargs ~= 2 then
-                                              vim.notify("Error, Rosed need exactly two arguments")
-                                              return
-                                            end
-                                            ros.rosed(opts.fargs[1], opts.fargs[2])
-                                          end,
-                                          {
-                                            nargs = "+",
-                                            complete = ros.package_file_completion,
-                                          }
-                                )
-
-
-local ros_autocmd_grp = vim.api.nvim_create_augroup("ros-nvim", { clear = true })
-
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-  pattern = {"*.launch"},
-  command = "setf xml",
-  group = ros_autocmd_grp,
-})
-
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-  pattern = {"*.msg"},
-  command = "setf ros",
-  group = ros_autocmd_grp,
-})
-
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-  pattern = {"*.srv"},
-  command = "setf ros",
-  group = ros_autocmd_grp,
-})
-
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-  pattern = {"*.action"},
-  command = "setf ros",
-  group = ros_autocmd_grp,
-})
 
 return M
