@@ -29,6 +29,7 @@ grammar for syntax highlighting run `TSInstall ros`.
 ## Features
 
 - `Rosed` command with tab completion
+- `RosSource` command for resourcing your workspace
 - follow `$(find ...)` links in launch files
 - show message and service definitions in floating windows
 - autocmcds for setting `ros` filetype for definition files (messages, services, actions),
