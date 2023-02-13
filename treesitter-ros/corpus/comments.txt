@@ -1,0 +1,32 @@
+========
+comments
+========
+
+# this is a comment
+string str # this is a comment after a field
+uint8 I = -123.0 # this is a comment after a constant
+
+----
+
+(source_file
+  (comment
+    (comment_char)
+    (comment_string))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (identifier)))
+  (comment
+    (comment_char)
+    (comment_string))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (comment
+    (comment_char)
+    (comment_string)))
