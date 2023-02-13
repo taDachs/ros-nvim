@@ -40,7 +40,7 @@ module.exports = grammar({
     const_definition: $ => seq($.const_name, '=', $.const_value),
     const_name: $ => /[A-Z_]+/,
     // TODO: const_value actual regex
-    const_value: $ => /[a-zA-Z0-9\.]+/,
-    identifier: $ => /[a-zA-Z0-9/_]+/,
+    const_value: $ => /[\"]?[a-zA-Z0-9\.]+[\"]?/,
+    identifier: $ => /[a-zA-Z0-9\./_]+/,
   }
 });

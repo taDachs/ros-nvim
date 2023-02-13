@@ -203,11 +203,11 @@
     },
     "const_value": {
       "type": "PATTERN",
-      "value": "[a-zA-Z0-9\\.]+"
+      "value": "[\\\"]?[a-zA-Z0-9\\.]+[\\\"]?"
     },
     "identifier": {
       "type": "PATTERN",
-      "value": "[a-zA-Z0-9/_]+"
+      "value": "[a-zA-Z0-9\\./_]+"
     }
   },
   "extras": [
