@@ -30,6 +30,7 @@ grammar for syntax highlighting run `TSInstall ros`.
 
 - `Rosed` command with tab completion
 - `RosSource` command for resourcing your workspace
+- `Roscd` command for changing directory
 - follow `$(find ...)` links in launch files
 - show message and service definitions in floating windows
 - autocmcds for setting `ros` filetype for definition files (messages, services, actions),
@@ -42,9 +43,11 @@ grammar for syntax highlighting run `TSInstall ros`.
 ### Default Config
 
 ```lua
-{
-  only_workspace = true,
+}
   lazy_load_package_list = true,
+  telescope = {
+    ws_filter = "current",
+  },
   treesitter = {
     enabled = true,
   },
