@@ -1,0 +1,139 @@
+================
+builtin constants
+================
+
+bool A = true
+bool A = false
+int8 B = 123
+uint8 C = -123
+int16 D = 123
+uint16 E = -123
+int32 F = 123
+uint32 G = -123
+int64 H = 123
+uint64 I = -123
+float32 J = 123.0
+float64 K = 123.0
+string L = "test"
+
+----
+
+(source_file
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (builtin_type))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value)))))
+
+================
+custom constants
+================
+
+test TEST="test"
+foo BAR=42
+
+----
+
+(source_file
+  (field_definition
+    (field_type
+      (custom_type
+        (identifier)))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value))))
+  (field_definition
+    (field_type
+      (custom_type
+        (identifier)))
+    (field_name
+      (const_definition
+        (const_name)
+        (const_value)))))
