@@ -1,6 +1,6 @@
 # Treesitter
 
-Requires the [Treesitter cli](https://tree-sitter.github.io/tree-sitter/creating-parsers)
+Requires the [Treesitter cli](https://github.com/tree-sitter/tree-sitter/tree/master/cli)
 
 To build the parser run
 ```sh
