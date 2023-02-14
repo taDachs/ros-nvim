@@ -3,35 +3,32 @@ local finders = require("telescope.finders")
 local conf = require("telescope.config").values
 
 local ros = require("ros-nvim.ros")
+local ros_config = require("ros-nvim.config")
 local util = require("mutils")
 
 local ros_pickers = {}
 
-ros._telescope_result_list = nil
-
-function build_result_list()
-  if ros._telescope_result_list ~= nil then
-    return ros._telescope_result_list
-  end
+local function build_result_list()
   local results = {}
-  for _, pkg in pairs(ros.get_package_list()) do
-    for _, file in pairs(pkg.files) do
-      local val = pkg.name .. " " .. util.relative_path(file, pkg.path)
-      table.insert(results, {
-        display = val,
-        value = file,
-        ordinal = val,
-      })
+  for _, pkg_name in pairs(ros.handle:list_pkg_names()) do
+    local pkg = ros.handle:get_pkg(pkg_name)
+    if ros.ws_type_includes(ros_config.telescope.ws_filter, pkg.ws_type) then
+      for _, file in pairs(pkg.files) do
+        local val = pkg.name .. " " .. util.relative_path(file, pkg.path)
+        table.insert(results, {
+          display = val,
+          value = file,
+          ordinal = val,
+        })
+      end
     end
   end
-  ros._telescope_result_list = results
   return results
 end
 
 function ros_pickers.ros_files(opts)
-  if not ros.is_ros_sourced() then
-    vim.notify("No ROS workspace sourced")
-    return
+  if not ros.handle:is_initialized() then
+    ros.handle:source_ws()
   end
   opts = opts or { "list-names" }
 

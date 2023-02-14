@@ -1,5 +1,6 @@
 local config = require("ros-nvim.config")
 local ros = require("ros-nvim.ros")
+local completion = require("ros-nvim.completion")
 
 local treesitter = require("nvim-treesitter.parsers")
 
@@ -11,20 +12,20 @@ local function get_parser_path()
   end
 end
 
-local function setup_treesitter() end
-
-if treesitter ~= nil then
-  local parser_config = treesitter.get_parser_configs()
-  parser_config.ros = {
-    install_info = {
-      url = get_parser_path() .. "/treesitter-ros/", -- local path or git repo
-      files = { "src/parser.c" },
-      -- optional entries:
-      generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-      requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
-    },
-    filetype = "ros", -- if filetype does not match the parser name
-  }
+local function setup_treesitter()
+  if treesitter ~= nil then
+    local parser_config = treesitter.get_parser_configs()
+    parser_config.ros = {
+      install_info = {
+        url = get_parser_path() .. "/treesitter-ros/", -- local path or git repo
+        files = { "src/parser.c" },
+        -- optional entries:
+        generate_requires_npm = false, -- if stand-alone parser without npm dependencies
+        requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
+      },
+      filetype = "ros", -- if filetype does not match the parser name
+    }
+  end
 end
 
 local function setup_autocommands()
@@ -64,10 +65,25 @@ local function setup_commands()
     ros.rosed(opts.fargs[1], opts.fargs[2])
   end, {
     nargs = "+",
-    complete = ros.package_file_completion,
+    complete = completion.package_file_completion,
   })
-  vim.api.nvim_create_user_command("RosSource", ros.source_ws, {
-    nargs = 0,
+
+  vim.api.nvim_create_user_command("Roscd", function(opts)
+    if #opts.fargs ~= 1 then
+      vim.notify("Error, Roscd need exactly one argument")
+      return
+    end
+    ros.roscd(opts.fargs[1])
+  end, {
+    nargs = 1,
+    complete = completion.roscd_completion,
+  })
+
+  vim.api.nvim_create_user_command("RosSource", function(opts)
+    ros.rossource(opts.fargs[1])
+  end, {
+    nargs = "?",
+    complete = "file",
   })
 end
 
