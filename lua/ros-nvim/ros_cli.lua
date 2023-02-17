@@ -1,5 +1,3 @@
-local util = require("mutils")
-
 PackageListing = {}
 PackageListing.__index = PackageListing
 
@@ -58,10 +56,10 @@ function ROS1ShellEnvironment:source_ws(ws_path)
   local command = { set_vars, source_command, get_vars }
   local command_string = "bash -c '" .. table.concat(command, ";") .. "'"
 
-  local result = util.run_command(command_string)
+  local result = vim.fn.system(command_string)
 
-  for _, line in pairs(util.strsplit(result, "\n")) do
-    line = util.strsplit(line, "=")
+  for _, line in pairs(vim.fn.split(result, "\n")) do
+    line = vim.fn.split(line, "=")
     local k, v = line[1], line[2]
     self.env[k] = v
   end
@@ -69,10 +67,10 @@ end
 
 function ROS1ShellEnvironment:list_packages()
   local pkgs = {}
-  local lines = util.strsplit(self:run_command("rospack list"), "\n")
+  local lines = vim.fn.split(self:run_command("rospack list"), "\n")
 
   for _, line in pairs(lines) do
-    line = util.strsplit(line)
+    line = vim.fn.split(line, " ")
     local name, path = line[1], line[2]
     table.insert(pkgs, PackageListing.new(name, path))
   end
@@ -84,7 +82,7 @@ function ROS1ShellEnvironment:run_command(command)
   local set_vars = self:build_set_vars()
 
   local command_string = "bash -c '" .. set_vars .. ";" .. command .. "'"
-  return util.run_command(command_string)
+  return vim.fn.system(command_string)
 end
 
 function ROS1ShellEnvironment:is_sourced()
@@ -95,7 +93,7 @@ function ROS1ShellEnvironment:get_current_ws()
   if self.env.CMAKE_PREFIX_PATH == "" then
     return nil
   end
-  local ws_path = util.strsplit(self.env.CMAKE_PREFIX_PATH, ":")[1]
+  local ws_path = vim.fn.split(self.env.CMAKE_PREFIX_PATH, ":")[1]
   return ws_path
 end
 

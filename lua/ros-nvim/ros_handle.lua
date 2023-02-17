@@ -1,5 +1,10 @@
-local util = require("mutils")
+local scan = require("plenary.scandir")
 local ros_cli = require("ros-nvim.ros_cli")
+
+local function _is_subdir(child, parent)
+  child = string.sub(vim.fs.normalize(child), 1, string.len(vim.fs.normalize(parent)))
+  return parent == child
+end
 
 Package = {}
 Package.__index = Package
@@ -41,10 +46,8 @@ function Package.new(name, path, files, dirs, msgs, srvs, ws_type)
 end
 
 function Package.from_path(name, path, ws_type)
-  local files = util.find_files_in_dir(path, "f")
-  local dirs = util.filter(util.find_files_in_dir(path, "d"), function(p)
-    return p ~= path
-  end)
+  local files = scan.scan_dir(path, { hidden = false, add_dirs = false })
+  local dirs = scan.scan_dir(path, { hidden = false, only_dirs = true })
 
   local srvs = {}
   local msgs = {}
@@ -90,9 +93,9 @@ function Message.new(name, definition, package)
 end
 
 function Message.from_file(path, package)
-  local definition = util.read_file(path)
-  local name = util.get_basename(path)
-  name = util.strsplit(name, "%.")[1]
+  local definition = vim.fn.readfile(path)
+  local name = vim.fs.basename(path)
+  name = vim.fn.split(name, "%.")[1]
   return Message.new(name, definition, package)
 end
 
@@ -108,9 +111,9 @@ function Service.new(name, definition, package)
 end
 
 function Service.from_file(path, package)
-  local definition = util.read_file(path)
-  local name = util.get_basename(path)
-  name = util.strsplit(name, "%.")[1]
+  local definition = vim.fn.readfile(path)
+  local name = vim.fs.basename(path)
+  name = vim.fn.split(name, "%.")[1]
   return Service.new(name, definition, package)
 end
 
@@ -133,7 +136,7 @@ function RosHandle.new(ros_version)
 end
 
 function RosHandle:is_initialized()
-  return util.len(self.pkgs) > 0
+  return vim.tbl_count(self.pkgs) > 0
 end
 
 function RosHandle:get_pkg(name)
@@ -143,9 +146,9 @@ function RosHandle:get_pkg(name)
     local pkg_path = self.pkgs[name]
 
     local ws_type = Package.USER_WS
-    if util.is_subdir(pkg_path, "/opt/ros") then
+    if _is_subdir(pkg_path, "/opt/ros") then
       ws_type = Package.GLOBAL_WS
-    elseif util.is_subdir(pkg_path, util.get_dirname(ws_path)) then
+    elseif _is_subdir(pkg_path, vim.fs.dirname(ws_path)) then
       ws_type = Package.CURRENT_WS
     end
 
@@ -156,7 +159,7 @@ function RosHandle:get_pkg(name)
 end
 
 function RosHandle:list_pkg_names()
-  return util.keys(self.pkgs)
+  return vim.tbl_keys(self.pkgs)
 end
 
 function RosHandle:source_ws(ws_path)

@@ -15,7 +15,7 @@ require("lazy").setup({
     {
         'tadachs/ros-nvim',
         config = function() require("ros-nvim").setup({only_workspace = true}) end,
-        dependencies = { "tadachs/mutils.nvim" },
+        dependencies = { "nvim-lua/plenary.nvim" },
     },
 ...
 })
@@ -43,7 +43,7 @@ grammar for syntax highlighting run `TSInstall ros`.
 ### Default Config
 
 ```lua
-}
+{
   lazy_load_package_list = true,
   telescope = {
     ws_filter = "current",

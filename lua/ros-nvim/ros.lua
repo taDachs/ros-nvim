@@ -1,6 +1,5 @@
 local config = require("ros-nvim.config")
 local ros_handle = require("ros-nvim.ros_handle")
-local util = require("mutils")
 
 local ros = {}
 
@@ -51,13 +50,18 @@ local function create_floating_window(content)
 end
 
 function ros.show_message_definition()
+  -- source if not already done
+  if not ros.handle:is_initialized() then
+    ros.handle:source_ws()
+  end
+
   -- Get the current visual selection
   local cursor_word = vim.fn.expand("<cWORD>")
   -- Test String: PointCloud2
   -- Test String: sensor_msgs::PointCloud2
 
   local pkg_name, msg_name
-  local val = util.strsplit(cursor_word, "::")
+  local val = vim.fn.split(cursor_word, "::")
   if #val >= 2 then
     pkg_name = val[1]
     msg_name = val[2]
@@ -74,11 +78,13 @@ function ros.show_message_definition()
   end
 
   local lines = {}
-  for _, line in pairs(util.strsplit(msg.definition, "\n")) do
+  for _, line in pairs(msg.definition) do
     -- filter comments
     if not string.match(line, "^%s*#") then
       local filtered = string.gsub(line, "#.*$", "")
-      table.insert(lines, filtered)
+      if string.len(filtered) > 0 then
+        table.insert(lines, filtered)
+      end
     end
   end
   create_floating_window(lines)
@@ -96,7 +102,7 @@ function ros.show_service_definition()
   -- Test String: std_srvs::Trigger
 
   local pkg_name, srv_name
-  local val = util.strsplit(cursor_word, "::")
+  local val = vim.fn.split(cursor_word, "::")
   if #val >= 2 then
     pkg_name = val[1]
     srv_name = val[2]
@@ -113,11 +119,13 @@ function ros.show_service_definition()
   end
 
   local lines = {}
-  for _, line in pairs(util.strsplit(srv.definition, "\n")) do
+  for _, line in pairs(srv.definition) do
     -- filter comments
     if not string.match(line, "^%s*#") then
       local filtered = string.gsub(line, "#.*$", "")
-      table.insert(lines, filtered)
+      if string.len(filtered) > 0 then
+        table.insert(lines, filtered)
+      end
     end
   end
   create_floating_window(lines)
@@ -167,7 +175,7 @@ function ros.rosed(pkg_name, file_name, edit_command)
   end
 
   for _, f in pairs(pkg_files) do
-    if util.get_basename(f) == file_name then -- found file
+    if vim.fs.basename(f) == file_name then -- found file
       vim.cmd(edit_command .. " " .. f)
       return
     end
@@ -196,7 +204,7 @@ function ros.roscd(pkg_path)
     ros.handle:source_ws()
   end
 
-  pkg_path = util.strsplit(pkg_path, "/")
+  pkg_path = vim.fn.split(pkg_path, "/")
   local pkg_name, subdir_comps = pkg_path[1], { unpack(pkg_path, 2) }
   local subdir = table.concat(subdir_comps, "/")
 

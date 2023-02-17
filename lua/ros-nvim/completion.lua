@@ -1,4 +1,3 @@
-local util = require("mutils")
 local ros = require("ros-nvim.ros")
 
 local completion = {}
@@ -9,14 +8,16 @@ function completion.package_file_completion(arg_lead, cmd_line, cursor_pos)
   end
 
   cmd_line = string.sub(cmd_line, 1, string.len(cmd_line) - string.len(arg_lead))
-  local args = util.strsplit(cmd_line)
+  local args = vim.fn.split(cmd_line)
+  print(vim.inspect(cmd_line))
+  print(vim.inspect(#args))
   if #args == 1 then -- only command
     return ros.handle:list_pkg_names()
   elseif #args == 2 then -- command and first arg
     local pkg = ros.handle:get_pkg(args[2])
 
     if pkg ~= nil then
-      return util.map(pkg.files, util.get_basename)
+      return vim.tbl_map(vim.fs.basename, pkg.files)
     else
       return {}
     end
@@ -28,7 +29,7 @@ function completion.roscd_completion(arg_lead, cmd_line, cursor_pos)
     ros.handle:source_ws()
   end
 
-  local arg_lead_comps = util.strsplit(arg_lead, "/")
+  local arg_lead_comps = vim.fn.split(arg_lead, "/")
   if #arg_lead_comps <= 1 and not string.match(arg_lead, "/$") then
     return ros.handle:list_pkg_names()
   end
@@ -42,7 +43,7 @@ function completion.roscd_completion(arg_lead, cmd_line, cursor_pos)
   for _, dir in pairs(pkg.dirs) do
     dir = pkg.name .. string.sub(dir, string.len(pkg.path) + 1)
     -- length of current path without package
-    if util.get_dirname(arg_lead) == util.get_dirname(dir) then
+    if vim.fs.dirname(arg_lead) == vim.fs.dirname(dir) then
       table.insert(options, dir)
     end
   end
