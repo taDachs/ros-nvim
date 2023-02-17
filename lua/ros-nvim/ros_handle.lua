@@ -95,7 +95,7 @@ end
 function Message.from_file(path, package)
   local definition = vim.fn.readfile(path)
   local name = vim.fs.basename(path)
-  name = vim.fn.split(name, "%.")[1]
+  name = vim.fn.split(name, [[\.]])[1]
   return Message.new(name, definition, package)
 end
 
@@ -113,7 +113,7 @@ end
 function Service.from_file(path, package)
   local definition = vim.fn.readfile(path)
   local name = vim.fs.basename(path)
-  name = vim.fn.split(name, "%.")[1]
+  name = vim.fn.split(name, [[\.]])[1]
   return Service.new(name, definition, package)
 end
 

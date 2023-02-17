@@ -168,13 +168,11 @@ function ros.rosed(pkg_name, file_name, edit_command)
     return
   end
 
-  local pkg_files = pkg.files
-
   if not edit_command then
     edit_command = "edit"
   end
 
-  for _, f in pairs(pkg_files) do
+  for _, f in pairs(pkg.files) do
     if vim.fs.basename(f) == file_name then -- found file
       vim.cmd(edit_command .. " " .. f)
       return
