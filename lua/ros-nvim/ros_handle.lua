@@ -122,14 +122,16 @@ RosHandle.__index = RosHandle
 
 function RosHandle.new(ros_version)
   if ros_version == nil then
-    ros_version = 1
+    ros_version = tonumber(os.getenv("ROS_VERSION")) or 1
   end
   local self = setmetatable({}, RosHandle)
   self.pkgs = {}
   if ros_version == 1 then
     self.env = ros_cli.ROS1ShellEnvironment.new()
+  elseif ros_version == 2 then
+    self.env = ros_cli.ROS2ShellEnvironment.new()
   else
-    error("ROS2ShellEnvironment not yet implemented")
+    error("ros version: " .. ros_version .. " not yet supported")
     return
   end
   return self

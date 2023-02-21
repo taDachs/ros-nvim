@@ -21,10 +21,15 @@ require("lazy").setup({
 })
 ```
 
+
 You have to install [treesitter](https://github.com/nvim-treesitter/nvim-treesitter) and
 [telescope](https://github.com/nvim-telescope/telescope.nvim) separately. To install the
 grammar for syntax highlighting run `TSInstall ros`.
 
+### ROS2
+
+**ROS2** Support is currently based on [muros2cli](https://github.com/taDachs/muros2cli), therefore
+it has to be installed separately.
 
 ## Features
 

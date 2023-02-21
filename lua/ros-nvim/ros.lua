@@ -56,7 +56,7 @@ function ros.show_message_definition()
   end
 
   -- Get the current visual selection
-  local cursor_word = vim.fn.expand("<cWORD>")
+  local cursor_word = vim.fn.expand("<cword>")
   -- Test String: PointCloud2
   -- Test String: sensor_msgs::PointCloud2
 
@@ -97,7 +97,7 @@ function ros.show_service_definition()
   end
 
   -- Get the current visual selection
-  local cursor_word = vim.fn.expand("<cWORD>")
+  local cursor_word = vim.fn.expand("<cword>")
   -- Test String: Trigger
   -- Test String: std_srvs::Trigger
 
