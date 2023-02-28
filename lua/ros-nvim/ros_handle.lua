@@ -162,15 +162,8 @@ end
 function RosHandle:get_pkg(name)
   -- package not yet loaded
   if type(self.pkgs[name]) == "string" then
-    local ws_path = vim.fs.normalize(vim.fs.dirname(self.env:get_current_ws()))
     local pkg_path = self.pkgs[name]
-
-    local ws_type = Package.USER_WS
-    if _is_subdir(pkg_path, "/opt/ros") then
-      ws_type = Package.GLOBAL_WS
-    elseif _is_subdir(pkg_path, vim.fs.dirname(ws_path)) then
-      ws_type = Package.CURRENT_WS
-    end
+    local ws_type = self:_get_ws_type_from_path(pkg_path)
 
     self.pkgs[name] = Package.from_path(name, pkg_path, ws_type)
   end
@@ -182,21 +175,25 @@ function RosHandle:list_pkg_names()
   return vim.tbl_keys(self.pkgs)
 end
 
+function RosHandle:_get_ws_type_from_path(path)
+  local ws_path = vim.fs.normalize(vim.fs.dirname(self.env:get_current_ws()))
+  local ws_type = Package.USER_WS
+  if _is_subdir(path, "/opt/ros") then
+    ws_type = Package.GLOBAL_WS
+  elseif _is_subdir(path, vim.fs.dirname(ws_path)) then
+    ws_type = Package.CURRENT_WS
+  end
+  return ws_type
+end
+
 function RosHandle:list_ws_scope_pkg_names(scope)
   local names = {}
-  local ws_path = vim.fs.normalize(vim.fs.dirname(self.env:get_current_ws()))
   for name, pkg in pairs(self.pkgs) do
     local ws_type = Package.USER_WS
     if type(pkg) == "table" then
       ws_type = pkg.ws_type
-    else
-      local pkg_path = self.pkgs[name]
-
-      if _is_subdir(pkg_path, "/opt/ros") then
-        ws_type = Package.GLOBAL_WS
-      elseif _is_subdir(pkg_path, vim.fs.dirname(ws_path)) then
-        ws_type = Package.CURRENT_WS
-      end
+    else -- is string
+      ws_type = self:_get_ws_type_from_path(pkg)
     end
     if _ws_type_includes(scope, ws_type) then
       table.insert(names, name)
