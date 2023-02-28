@@ -5,20 +5,6 @@ local ros = {}
 
 ros.handle = ros_handle.RosHandle.new()
 
--- does a include b
-function ros.ws_type_includes(a, b)
-  if a == ros_handle.Package.GLOBAL_WS then
-    return true
-  end
-
-  if a == ros_handle.Package.USER_WS and b ~= ros_handle.Package.GLOBAL_WS then
-    return true
-  end
-
-  -- only if both are current
-  return a == b
-end
-
 local function create_floating_window(content)
   local w, h = 50, #content
 
@@ -56,7 +42,7 @@ function ros.show_message_definition()
   end
 
   -- Get the current visual selection
-  local cursor_word = vim.fn.expand("<cWORD>")
+  local cursor_word = vim.fn.expand("<cword>")
   -- Test String: PointCloud2
   -- Test String: sensor_msgs::PointCloud2
 
@@ -97,7 +83,7 @@ function ros.show_service_definition()
   end
 
   -- Get the current visual selection
-  local cursor_word = vim.fn.expand("<cWORD>")
+  local cursor_word = vim.fn.expand("<cword>")
   -- Test String: Trigger
   -- Test String: std_srvs::Trigger
 

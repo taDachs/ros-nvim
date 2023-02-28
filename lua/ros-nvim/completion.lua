@@ -9,8 +9,6 @@ function completion.package_file_completion(arg_lead, cmd_line, cursor_pos)
 
   cmd_line = string.sub(cmd_line, 1, string.len(cmd_line) - string.len(arg_lead))
   local args = vim.fn.split(cmd_line)
-  print(vim.inspect(cmd_line))
-  print(vim.inspect(#args))
   if #args == 1 then -- only command
     return ros.handle:list_pkg_names()
   elseif #args == 2 then -- command and first arg
@@ -48,7 +46,6 @@ function completion.roscd_completion(arg_lead, cmd_line, cursor_pos)
     end
   end
 
-  print(vim.inspect(options))
   return options
 end
 

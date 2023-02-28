@@ -21,6 +21,7 @@ require("lazy").setup({
 })
 ```
 
+
 You have to install [treesitter](https://github.com/nvim-treesitter/nvim-treesitter) and
 [telescope](https://github.com/nvim-telescope/telescope.nvim) separately. To install the
 grammar for syntax highlighting run `TSInstall ros`.
@@ -37,6 +38,7 @@ grammar for syntax highlighting run `TSInstall ros`.
   sets commentstring as well
 - (optional) telescope finder
 - (optional) syntax highlighting for definition using treesitter
+- supports ROS2
 
 ## Example Setup
 
