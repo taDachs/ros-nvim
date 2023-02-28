@@ -26,10 +26,6 @@ You have to install [treesitter](https://github.com/nvim-treesitter/nvim-treesit
 [telescope](https://github.com/nvim-telescope/telescope.nvim) separately. To install the
 grammar for syntax highlighting run `TSInstall ros`.
 
-### ROS2
-
-**ROS2** Support is currently based on [muros2cli](https://github.com/taDachs/muros2cli), therefore
-it has to be installed separately.
 
 ## Features
 
@@ -42,6 +38,7 @@ it has to be installed separately.
   sets commentstring as well
 - (optional) telescope finder
 - (optional) syntax highlighting for definition using treesitter
+- supports ROS2
 
 ## Example Setup
 

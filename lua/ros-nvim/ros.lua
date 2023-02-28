@@ -5,20 +5,6 @@ local ros = {}
 
 ros.handle = ros_handle.RosHandle.new()
 
--- does a include b
-function ros.ws_type_includes(a, b)
-  if a == ros_handle.Package.GLOBAL_WS then
-    return true
-  end
-
-  if a == ros_handle.Package.USER_WS and b ~= ros_handle.Package.GLOBAL_WS then
-    return true
-  end
-
-  -- only if both are current
-  return a == b
-end
-
 local function create_floating_window(content)
   local w, h = 50, #content
 

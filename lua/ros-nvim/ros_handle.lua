@@ -81,6 +81,20 @@ function Package:get_srv(name)
   return self.srvs[name]
 end
 
+-- does a include b
+local function _ws_type_includes(a, b)
+  if a == Package.GLOBAL_WS then
+    return true
+  end
+
+  if a == Package.USER_WS and b ~= Package.GLOBAL_WS then
+    return true
+  end
+
+  -- only if both are current
+  return a == b
+end
+
 Message = {}
 Message.__index = Message
 
@@ -128,8 +142,10 @@ function RosHandle.new(ros_version)
   self.pkgs = {}
   if ros_version == 1 then
     self.env = ros_cli.ROS1ShellEnvironment.new()
+    vim.notify("Using ROS 1")
   elseif ros_version == 2 then
     self.env = ros_cli.ROS2ShellEnvironment.new()
+    vim.notify("Using ROS 2")
   else
     error("ros version: " .. ros_version .. " not yet supported")
     return
@@ -144,7 +160,7 @@ end
 function RosHandle:get_pkg(name)
   -- package not yet loaded
   if type(self.pkgs[name]) == "string" then
-    local ws_path = self.env:get_current_ws()
+    local ws_path = vim.fs.normalize(vim.fs.dirname(self.env:get_current_ws()))
     local pkg_path = self.pkgs[name]
 
     local ws_type = Package.USER_WS
@@ -162,6 +178,29 @@ end
 
 function RosHandle:list_pkg_names()
   return vim.tbl_keys(self.pkgs)
+end
+
+function RosHandle:list_ws_scope_pkg_names(scope)
+  local names = {}
+  local ws_path = vim.fs.normalize(vim.fs.dirname(self.env:get_current_ws()))
+  for name, pkg in pairs(self.pkgs) do
+    local ws_type = Package.USER_WS
+    if type(pkg) == "table" then
+      ws_type = pkg.ws_type
+    else
+      local pkg_path = self.pkgs[name]
+
+      if _is_subdir(pkg_path, "/opt/ros") then
+        ws_type = Package.GLOBAL_WS
+      elseif _is_subdir(pkg_path, vim.fs.dirname(ws_path)) then
+        ws_type = Package.CURRENT_WS
+      end
+    end
+    if _ws_type_includes(scope, ws_type) then
+      table.insert(names, name)
+    end
+  end
+  return names
 end
 
 function RosHandle:source_ws(ws_path)
