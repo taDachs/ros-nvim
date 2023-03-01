@@ -1,4 +1,17 @@
-local util = require("mutils")
+local function update_table(a, b)
+  for k, v in pairs(b) do
+    if type(v) == "table" then
+      if type(a[k] or false) == "table" then
+        util.update_table(a[k] or {}, b[k] or {})
+      else
+        a[k] = v
+      end
+    else
+      a[k] = v
+    end
+  end
+  return a
+end
 
 local config = {
   lazy_load_package_list = true,
@@ -17,7 +30,7 @@ local config = {
 }
 
 function config.update(opts)
-  util.update_table(config, opts or {})
+  update_table(config, opts or {})
 end
 
 return config

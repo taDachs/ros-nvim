@@ -142,10 +142,12 @@ function RosHandle.new(ros_version)
   self.pkgs = {}
   if ros_version == 1 then
     self.env = ros_cli.ROS1ShellEnvironment.new()
-    vim.notify("Using ROS 1")
+    self.version = 1
+    -- vim.notify("Using ROS 1")
   elseif ros_version == 2 then
     self.env = ros_cli.ROS2ShellEnvironment.new()
-    vim.notify("Using ROS 2")
+    self.version = 2
+    -- vim.notify("Using ROS 2")
   else
     error("ros version: " .. ros_version .. " not yet supported")
     return
