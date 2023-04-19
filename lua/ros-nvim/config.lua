@@ -2,7 +2,7 @@ local function update_table(a, b)
   for k, v in pairs(b) do
     if type(v) == "table" then
       if type(a[k] or false) == "table" then
-        util.update_table(a[k] or {}, b[k] or {})
+        vim.tbl_extend("force", a[k] or {}, b[k] or {})
       else
         a[k] = v
       end
@@ -26,6 +26,9 @@ local config = {
   },
   autocmds = {
     enabled = true,
+  },
+  completion = {
+    cmp = true,
   },
 }
 
