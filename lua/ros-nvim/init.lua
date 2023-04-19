@@ -2,8 +2,6 @@ local config = require("ros-nvim.config")
 local ros = require("ros-nvim.ros")
 local completion = require("ros-nvim.completion")
 
-local treesitter = require("nvim-treesitter.parsers")
-
 local function get_parser_path()
   for _, p in pairs(vim.api.nvim_list_runtime_paths()) do
     if string.match(p, "ros%-nvim") then
@@ -13,6 +11,7 @@ local function get_parser_path()
 end
 
 local function setup_treesitter()
+  local treesitter = require("nvim-treesitter.parsers")
   if treesitter ~= nil then
     local parser_config = treesitter.get_parser_configs()
     parser_config.ros = {
