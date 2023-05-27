@@ -35,7 +35,7 @@ local function create_floating_window(content)
   })
 end
 
-function ros.show_message_definition()
+function ros.show_interface_definition()
   -- source if not already done
   if not ros.handle:is_initialized() then
     ros.handle:source_ws()
@@ -45,67 +45,30 @@ function ros.show_message_definition()
   local cursor_word = vim.fn.expand("<cword>")
   -- Test String: PointCloud2
   -- Test String: sensor_msgs::PointCloud2
-
-  local pkg_name, msg_name
-  local val = vim.fn.split(cursor_word, "::")
-  if #val >= 2 then
-    pkg_name = val[1]
-    msg_name = val[2]
-  else
-    pkg_name = nil
-    msg_name = val[1]
-  end
-
-  local msg = ros.handle:get_msg(msg_name, pkg_name)
-
-  if msg == nil then
-    vim.notify("No valid message: " .. cursor_word)
-    return
-  end
-
-  local lines = {}
-  for _, line in pairs(msg.definition) do
-    -- filter comments
-    if not string.match(line, "^%s*#") then
-      local filtered = string.gsub(line, "#.*$", "")
-      if string.len(filtered) > 0 then
-        table.insert(lines, filtered)
-      end
-    end
-  end
-  create_floating_window(lines)
-end
-
-function ros.show_service_definition()
-  -- source if not already done
-  if not ros.handle:is_initialized() then
-    ros.handle:source_ws()
-  end
-
-  -- Get the current visual selection
-  local cursor_word = vim.fn.expand("<cword>")
-  -- Test String: Trigger
   -- Test String: std_srvs::Trigger
 
-  local pkg_name, srv_name
+  local pkg_name, interface_name
   local val = vim.fn.split(cursor_word, "::")
   if #val >= 2 then
     pkg_name = val[1]
-    srv_name = val[2]
+    interface_name = val[2]
   else
     pkg_name = nil
-    srv_name = val[1]
+    interface_name = val[1]
   end
 
-  local srv = ros.handle:get_srv(srv_name, pkg_name)
+  local interface = ros.handle:get_msg(interface_name, pkg_name)
+  if not interface then
+    interface = ros.handle:get_srv(interface_name, pkg_name)
+  end
 
-  if srv == nil then
-    vim.notify("No valid service: " .. cursor_word)
+  if interface == nil then
+    vim.notify("No valid interface: " .. cursor_word)
     return
   end
 
   local lines = {}
-  for _, line in pairs(srv.definition) do
+  for _, line in pairs(interface.definition) do
     -- filter comments
     if not string.match(line, "^%s*#") then
       local filtered = string.gsub(line, "#.*$", "")
