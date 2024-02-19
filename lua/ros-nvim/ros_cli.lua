@@ -178,7 +178,13 @@ function ROS2ShellEnvironment:_get_ws_root(path, add_source_dir)
 
   local opt_ros = "/opt/ros"
 
+  paths = {}
+  table.insert(paths, path)
   for p in vim.fs.parents(path) do
+    table.insert(paths, p)
+  end
+
+  for _, p in pairs(paths) do
     p = vim.fn.resolve(vim.fs.normalize(p))
     if p == opt_ros then
       if add_source_dir then
