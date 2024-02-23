@@ -78,3 +78,4 @@ vim.keymap.set('n', '<leader>rdi', function() require("ros-nvim.ros").show_inter
 ## Contributors
 
 - [darius1702](https://github.com/darius1702)
+- [galou](https://github.com/galou)
